@@ -10,4 +10,4 @@ MODEL_NAME = 'tfx_title_classifier'
 
 
 def transformed_name(key):
-    return key + '_xf'
+    return f'{key}_xf'

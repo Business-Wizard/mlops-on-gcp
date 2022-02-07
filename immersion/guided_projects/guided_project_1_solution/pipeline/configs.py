@@ -17,6 +17,7 @@
 This file defines environments for a TFX taxi pipeline.
 """
 
+
 import os  # pylint: disable=unused-import
 
 # TODO(b/149347293): Move more TFX CLI flags into python configuration.
@@ -110,15 +111,14 @@ BIG_QUERY_QUERY = """
 #                    scaling bottleneck.
 # TODO(step 8): (Optional) Uncomment below to use Dataflow.
 DATAFLOW_BEAM_PIPELINE_ARGS = [
-   '--project=' + GOOGLE_CLOUD_PROJECT,
-   '--runner=DataflowRunner',
-   '--temp_location=' + os.path.join('gs://', GCS_BUCKET_NAME, 'tmp'),
-   '--region=' + GOOGLE_CLOUD_REGION,
-   # Temporary overrides of defaults.
-   '--disk_size_gb=50',
-   '--experiments=shuffle_mode=auto',
-   '--machine_type=n1-standard-8',
-   ]
+    f'--project={GOOGLE_CLOUD_PROJECT}',
+    '--runner=DataflowRunner',
+    '--temp_location=' + os.path.join('gs://', GCS_BUCKET_NAME, 'tmp'),
+    f'--region={GOOGLE_CLOUD_REGION}',
+    '--disk_size_gb=50',
+    '--experiments=shuffle_mode=auto',
+    '--machine_type=n1-standard-8',
+]
 
 # A dict which contains the training job parameters to be passed to Google
 # Cloud AI Platform. For the full set of parameters supported by Google Cloud AI

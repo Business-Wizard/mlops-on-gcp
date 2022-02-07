@@ -25,7 +25,6 @@ from models.keras import model
 class ModelTest(tf.test.TestCase):
 
   def testBuildKerasModel(self):
-    pass
     built_model = model._build_keras_model(
         hidden_units=[1, 1], learning_rate=0.1)  # pylint: disable=protoected-access
     self.assertEqual(len(built_model.layers), 10)

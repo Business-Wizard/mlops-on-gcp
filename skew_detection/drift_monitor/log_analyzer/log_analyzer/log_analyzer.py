@@ -94,15 +94,13 @@ def _generate_query(table_name: str, model: str, version: str, start_time: str, 
         WHERE time BETWEEN '{{ start_time }}' AND '{{ end_time }}'
                 AND model='{{ model }}' AND model_version='{{ version }}'
         """
-    
-    query = Template(sampling_query_template).render(
+
+    return Template(sampling_query_template).render(
         source_table=table_name, 
         model=model, 
         version=version, 
         start_time=start_time, 
         end_time=end_time)
-
-    return query
 
 
 def _alert_if_anomalies(anomalies: anomalies_pb2.Anomalies, output_path: str):

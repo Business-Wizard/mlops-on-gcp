@@ -17,6 +17,7 @@
 This file defines environments for a TFX taxi pipeline.
 """
 
+
 import os  # pylint: disable=unused-import
 
 # Pipeline name will be used to identify this pipeline.
@@ -125,16 +126,9 @@ _query_sample_rate = 0.0001  # Generate a 0.01% random sample.
 GCP_AI_PLATFORM_TRAINING_ARGS = {
     'project': GOOGLE_CLOUD_PROJECT,
     'region': GOOGLE_CLOUD_REGION,
-    # Starting from TFX 0.14, training on AI Platform uses custom containers:
-    # https://cloud.google.com/ml-engine/docs/containers-overview
-    # You can specify a custom container here. If not specified, TFX will use
-    # a public container image matching the installed version of TFX.
-    # TODO(step 9): (Optional) Set your container name below.
     'masterConfig': {
-      'imageUri': 'gcr.io/' + GOOGLE_CLOUD_PROJECT + '/tfx-pipeline'
+        'imageUri': f'gcr.io/{GOOGLE_CLOUD_PROJECT}/tfx-pipeline'
     },
-    # Note that if you do specify a custom container, ensure the entrypoint
-    # calls into TFX's run_executor script (tfx/scripts/run_executor.py)
 }
 
 # A dict which contains the serving job parameters to be passed to Google

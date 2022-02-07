@@ -28,4 +28,4 @@ NUM_CLASSES = 7
 
 def transformed_name(key):
     """Add post-fix to feature keys after transformations applied."""
-    return key + '_xf'
+    return f'{key}_xf'

@@ -70,14 +70,12 @@ def _input_fn(file_pattern, tf_transform_output, batch_size=200):
   transformed_feature_spec = (
       tf_transform_output.transformed_feature_spec().copy())
 
-  dataset = tf.data.experimental.make_batched_features_dataset(
+  return tf.data.experimental.make_batched_features_dataset(
       file_pattern=file_pattern,
       batch_size=batch_size,
       features=transformed_feature_spec,
       reader=_gzip_reader_fn,
       label_key=features.transformed_name(features.LABEL_KEY))
-
-  return dataset
 
 def _build_keras_model(tf_transform_output, hidden_units, learning_rate):
   """Creates a DNN Keras model for classifying taxi data.
@@ -107,13 +105,12 @@ def _build_keras_model(tf_transform_output, hidden_units, learning_rate):
       for categorical_column in categorical_columns
   ]
 
-  model = _wide_and_deep_classifier(
+  return _wide_and_deep_classifier(
       # TODO(b/139668410) replace with premade wide_and_deep keras model
       wide_columns=indicator_columns,
       deep_columns=numeric_columns,
       dnn_hidden_units=hidden_units,
       learning_rate=learning_rate)
-  return model
 
 
 def _wide_and_deep_classifier(wide_columns, deep_columns, dnn_hidden_units, learning_rate):
@@ -169,10 +166,10 @@ def run_fn(fn_args):
   """
   
   tf_transform_output = tft.TFTransformOutput(fn_args.transform_output)
-    
+
   train_dataset = _input_fn(fn_args.train_files, tf_transform_output, TRAIN_BATCH_SIZE)
   eval_dataset = _input_fn(fn_args.eval_files, tf_transform_output, EVAL_BATCH_SIZE)
-    
+
   model = _build_keras_model(
       tf_transform_output=tf_transform_output,
       hidden_units=HIDDEN_UNITS,
@@ -193,7 +190,7 @@ def run_fn(fn_args):
       verbose=2,
       callbacks=callbacks)
 
-  
+
   signatures = {
       'serving_default':
           _get_serve_tf_examples_fn(model,
@@ -203,9 +200,9 @@ def run_fn(fn_args):
                                             dtype=tf.string,
                                             name='examples')),
   }
-  
+
   model.save(fn_args.serving_model_dir, save_format='tf', signatures=signatures)
-  _copy_tensorboard_logs(LOCAL_LOG_DIR, fn_args.serving_model_dir + '/logs')
+  _copy_tensorboard_logs(LOCAL_LOG_DIR, f'{fn_args.serving_model_dir}/logs')
     
 
   

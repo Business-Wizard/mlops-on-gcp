@@ -86,13 +86,14 @@ def _input_fn(file_pattern: List[Text],
     A dataset that contains (features, indices) tuple where features is a
       dictionary of Tensors, and indices is a single Tensor of label indices.
   """
-  dataset = data_accessor.tf_dataset_factory(
+  return data_accessor.tf_dataset_factory(
       file_pattern,
       dataset_options.TensorFlowDatasetOptions(
-          batch_size=batch_size, label_key=features.transformed_name(features.LABEL_KEY)),
-      tf_transform_output.transformed_metadata.schema)
-    
-  return dataset
+          batch_size=batch_size,
+          label_key=features.transformed_name(features.LABEL_KEY),
+      ),
+      tf_transform_output.transformed_metadata.schema,
+  )
 
 
 def _get_hyperparameters() -> kerastuner.HyperParameters:
@@ -282,7 +283,7 @@ def run_fn(fn_args: TrainerFnArgs):
     # _build_keras_model.
     hparams = _get_hyperparameters()
   absl.logging.info('HyperParameters for training: %s' % hparams.get_config())
-  
+
   # Distribute training over multiple replicas on the same machine.
   mirrored_strategy = tf.distribute.MirroredStrategy()
   with mirrored_strategy.scope():
@@ -301,7 +302,7 @@ def run_fn(fn_args: TrainerFnArgs):
       validation_steps=fn_args.eval_steps,
       verbose=2,      
       callbacks=[tensorboard_callback])
-    
+
   signatures = {
       'serving_default':
           _get_serve_tf_examples_fn(model,
@@ -311,6 +312,6 @@ def run_fn(fn_args: TrainerFnArgs):
                                             dtype=tf.string,
                                             name='examples')),
   }
-  
+
   model.save(fn_args.serving_model_dir, save_format='tf', signatures=signatures)
-  _copy_tensorboard_logs(LOCAL_LOG_DIR, fn_args.serving_model_dir + '/logs')
+  _copy_tensorboard_logs(LOCAL_LOG_DIR, f'{fn_args.serving_model_dir}/logs')

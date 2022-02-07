@@ -89,14 +89,12 @@ def _input_fn(file_pattern: List[Text],
     A dataset that contains (features, indices) tuple where features is a
       dictionary of Tensors, and indices is a single Tensor of label indices.
   """
-    dataset = data_accessor.tf_dataset_factory(
+    return data_accessor.tf_dataset_factory(
         file_pattern,
         dataset_options.TensorFlowDatasetOptions(
             batch_size=batch_size,
             label_key=features.transformed_name(features.LABEL_KEY)),
         tf_transform_output.transformed_metadata.schema)
-
-    return dataset
 
 
 def _get_hyperparameters() -> kerastuner.HyperParameters:
@@ -336,4 +334,4 @@ def run_fn(fn_args: TrainerFnArgs):
     model.save(fn_args.serving_model_dir,
                save_format='tf',
                signatures=signatures)
-    _copy_tensorboard_logs(LOCAL_LOG_DIR, fn_args.model_run_dir + '/logs')
+    _copy_tensorboard_logs(LOCAL_LOG_DIR, f'{fn_args.model_run_dir}/logs')

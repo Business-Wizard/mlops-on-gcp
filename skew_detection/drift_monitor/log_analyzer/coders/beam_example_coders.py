@@ -58,7 +58,7 @@ class InstanceCoder(beam.DoFn):
 
         self._features = {}
         for feature in schema.feature:
-            if not feature.type in _SCHEMA_TO_NUMPY.keys():
+            if feature.type not in _SCHEMA_TO_NUMPY.keys():
                 raise ValueError(
                     "Unsupported feature type: {}".format(feature.type))
             self._features[feature.name] = _SCHEMA_TO_NUMPY[feature.type]

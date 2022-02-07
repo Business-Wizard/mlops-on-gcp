@@ -13,6 +13,7 @@
 # limitations under the License.
 """KFP runner configuration"""
 
+
 from typing import Text
 from distutils.util import strtobool
 
@@ -48,13 +49,13 @@ if __name__ == '__main__':
     BEAM_PIPELINE_ARGS = [
         '--runner=DataflowRunner',
         '--experiments=shuffle_mode=auto',
-        '--project=' + Config.PROJECT_ID,
-        '--temp_location=' + BEAM_TEMP_FOLDER,
-        '--region=' + Config.GCP_REGION,
-        # Temporary overrides of defaults and cap autoscaling.
+        f'--project={Config.PROJECT_ID}',
+        f'--temp_location={BEAM_TEMP_FOLDER}',
+        f'--region={Config.GCP_REGION}',
         '--disk_size_gb=50',
-        '--max_num_workers=1'
+        '--max_num_workers=1',
     ]
+
 
     # Set the default values for the pipeline runtime parameters
     data_root_uri = data_types.RuntimeParameter(name='data-root-uri',

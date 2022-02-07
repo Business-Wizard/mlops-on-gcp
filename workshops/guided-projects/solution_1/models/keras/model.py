@@ -72,14 +72,12 @@ def _input_fn(file_pattern, tf_transform_output, batch_size=200):
   transformed_feature_spec = (
       tf_transform_output.transformed_feature_spec().copy())
 
-  dataset = tf.data.experimental.make_batched_features_dataset(
+  return tf.data.experimental.make_batched_features_dataset(
       file_pattern=file_pattern,
       batch_size=batch_size,
       features=transformed_feature_spec,
       reader=_gzip_reader_fn,
       label_key=features.transformed_name(features.LABEL_KEY))
-
-  return dataset
 
 
 def _build_keras_model(hidden_units, learning_rate):
@@ -124,13 +122,12 @@ def _build_keras_model(hidden_units, learning_rate):
       for categorical_column in categorical_columns
   ]
 
-  model = _wide_and_deep_classifier(
+  return _wide_and_deep_classifier(
       # TODO(b/140320729) Replace with premade wide_and_deep keras model
       wide_columns=indicator_column,
       deep_columns=real_valued_columns,
       dnn_hidden_units=hidden_units,
       learning_rate=learning_rate)
-  return model
 
 
 def _wide_and_deep_classifier(wide_columns, deep_columns, dnn_hidden_units,

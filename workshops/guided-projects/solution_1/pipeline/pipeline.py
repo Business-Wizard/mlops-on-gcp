@@ -69,14 +69,11 @@ def create_pipeline(
 ) -> pipeline.Pipeline:
   """Implements the chicago taxi pipeline with TFX."""
 
-  components = []
-
   # Brings data into the pipeline or otherwise joins/converts training data.
   # example_gen = CsvExampleGen(input=external_input(data_path))
   # TODO(step 7): (Optional) Uncomment here to use BigQuery as a data source.
   example_gen = BigQueryExampleGen(query=query)
-  components.append(example_gen)
-
+  components = [example_gen]
   # Computes statistics over data for visualization and example validation.
   statistics_gen = StatisticsGen(examples=example_gen.outputs['examples'])
   # TODO(step 5): Uncomment here to add StatisticsGen to the pipeline.

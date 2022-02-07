@@ -24,13 +24,10 @@ def _prepare_predict_request(image_path):
 
     image_bytes = _get_image_bytes(image_path)
     instances = [{'b64': base64.b64encode(image_bytes).decode('utf-8')}]
-    request_body = {
+    return {
         'signature_name': 'serving_preprocess',
         'instances': instances
     }
-    
-
-    return request_body
 
 
 if __name__ == '__main__':

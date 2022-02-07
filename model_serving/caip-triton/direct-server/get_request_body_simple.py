@@ -198,10 +198,7 @@ def serialize_byte_tensor(input_tensor):
             # don't convert it to str as Python will encode the
             # bytes which may distort the meaning
             if obj.dtype.type == np.bytes_:
-                if type(obj.item()) == bytes:
-                    s = obj.item()
-                else:
-                    s = bytes(obj)
+                s = obj.item() if type(obj.item()) == bytes else bytes(obj)
             else:
                 s = str(obj).encode('utf-8')
             flattened += struct.pack("<I", len(s))
@@ -272,16 +269,12 @@ def preprocess(img, format, dtype, c, h, w, scaling, protocol):
     Pre-process an image to meet the size, type and format
     requirements specified by the parameters.
     """
-    if c == 1:
-        sample_img = img.convert('L')
-    else:
-        sample_img = img.convert('RGB')
-
+    sample_img = img.convert('L') if c == 1 else img.convert('RGB')
     resized_img = sample_img.resize((w, h), Image.BILINEAR)
     resized = np.array(resized_img)
     if resized.ndim == 2:
         resized = resized[:, :, np.newaxis]
-    
+
     typed = resized.astype(dtype)
 
     if scaling == 'INCEPTION':
@@ -294,13 +287,7 @@ def preprocess(img, format, dtype, c, h, w, scaling, protocol):
     else:
         scaled = typed
 
-    # Swap to CHW if necessary
-    if format == "FORMAT_NCHW":
-        ordered = np.transpose(scaled, (2, 0, 1))
-    else:
-        ordered = scaled
-
-    return ordered
+    return np.transpose(scaled, (2, 0, 1)) if format == "FORMAT_NCHW" else scaled
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -308,13 +295,13 @@ if __name__ == '__main__':
                         '--mode',
                         required=False,
                         default=False,
-                        help='image or simple')    
+                        help='image or simple')
     parser.add_argument('-f',
                         '--image_filename', 
                         type=str, default=False,
                         help='Input image / Input folder.')
     FLAGS = parser.parse_args()
-    
+
     if FLAGS.mode == 'image':
         input_name, output_name, c, h, w, format, dtype = 'gpu_0/data', 'gpu_0/softmax', 3, 224, 224, 'FORMAT_NCHW', np.float32
         filenames = []
@@ -328,7 +315,7 @@ if __name__ == '__main__':
             filenames = [
                 FLAGS.image_filename,
             ]
-        
+
         filenames.sort()
 
         # Preprocess the images into input data according to model
@@ -345,16 +332,15 @@ if __name__ == '__main__':
         uri = "/v2/models/resnet50_netdef/infer"
         with open('payload.dat', 'wb') as output_file:
             output_file.write(request_body)
-            output_file.close() 
+            output_file.close()
     else:
         input0_data = np.arange(start=0, stop=16, dtype=np.int32)
         input0_data = np.expand_dims(input0_data, axis=0)
         input1_data = np.full(shape=(1, 16), fill_value=-1, dtype=np.int32)
-        inputs = []
-        inputs.append(InferInput('INPUT0', [1, 16], "INT32"))
+        inputs = [InferInput('INPUT0', [1, 16], "INT32")]
         inputs.append(InferInput('INPUT1', [1, 16], "INT32"))
         inputs[0].set_data_from_numpy(input0_data, binary_data=False)
-        inputs[1].set_data_from_numpy(input1_data, binary_data=False)    
+        inputs[1].set_data_from_numpy(input1_data, binary_data=False)
         query_params = {'test_1': 1, 'test_2': 2 }
         infer_request, request_body, json_size = get_inference_request(inputs, '0')
         uri = "/v2/models/simple/infer"

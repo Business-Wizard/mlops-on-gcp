@@ -78,25 +78,25 @@ def log_stats(environment):
     
     global test_id
     test_id = None
-    
+
     logging.info('Entering the Cloud Logging logger greenlet')
-    
+
     creds, project_id = google.auth.default()
     client = LoggingServiceV2Client(credentials=creds)
     project_path = client.project_path(project_id)
-    
+
     while True:
         gevent.sleep(LOG_STATS_INTERVAL_SEC)
-        
-        if not environment.runner.state in [STATE_RUNNING] or not test_id:
+
+        if environment.runner.state not in [STATE_RUNNING] or not test_id:
             continue
-            
-        log_path = client.log_path(project_id, LOG_NAME)             
+
+        log_path = client.log_path(project_id, LOG_NAME)
         timestamp = Timestamp()
-        timestamp.FromDatetime(datetime.now())   
+        timestamp.FromDatetime(datetime.now())
         log_entries = []
         for key in sorted(environment.stats.entries.keys()):
-            
+
             r = environment.stats.entries[key]
             payload = Struct()
             payload.update({
@@ -108,7 +108,7 @@ def log_stats(environment):
                 'num_requests': environment.runner.stats.total.num_requests,
                 'num_failures': environment.runner.stats.total.num_failures,
             })
-            
+
             log_entry = LogEntry(
                 log_name=log_path,
                 resource={'type': 'global'},
@@ -116,7 +116,7 @@ def log_stats(environment):
                 json_payload=payload
             )
             log_entries.append(log_entry)
-  
+
         if log_entries:
             try:
                 response = client.write_log_entries(
@@ -181,14 +181,13 @@ class AIPPClient(object):
         
         url = '{}/v1/projects/{}/models/{}/versions/{}:predict'.format(
             self._service_endpoint, project_id, model, version)
-            
+
         request_body = {
             'signature_name': signature,
             'instances': instances
         }
-    
-        response = self._authed_session.post(url, data=json.dumps(request_body))
-        return response
+
+        return self._authed_session.post(url, data=json.dumps(request_body))
  
 
 def predict_task(

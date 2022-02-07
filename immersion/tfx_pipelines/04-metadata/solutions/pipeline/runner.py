@@ -14,6 +14,7 @@
 # limitations under the License.
 """KFP runner configuration"""
 
+
 import kfp
 
 from tfx.orchestration import data_types
@@ -49,12 +50,12 @@ if __name__ == '__main__':
   beam_pipeline_args = [
       '--runner=DataflowRunner',
       '--experiments=shuffle_mode=auto',
-      '--project=' + Config.PROJECT_ID,
-      '--temp_location=' + beam_tmp_folder,
-      '--region=' + Config.GCP_REGION,
+      f'--project={Config.PROJECT_ID}',
+      f'--temp_location={beam_tmp_folder}',
+      f'--region={Config.GCP_REGION}',
   ]
-    
-  
+      
+
   # Set the default values for the pipeline runtime parameters   
   data_root_uri = data_types.RuntimeParameter(
       name='data-root-uri',
@@ -67,7 +68,7 @@ if __name__ == '__main__':
       default=5000,
       ptype=int
   )
-    
+
   eval_steps = data_types.RuntimeParameter(
       name='eval-steps',
       default=500,
@@ -78,7 +79,7 @@ if __name__ == '__main__':
       Config.ARTIFACT_STORE_URI, 
       Config.PIPELINE_NAME,
       kfp.dsl.RUN_ID_PLACEHOLDER)
-    
+
   # Set KubeflowDagRunner settings.
   metadata_config = kubeflow_dag_runner.get_default_kubeflow_metadata_config()
 

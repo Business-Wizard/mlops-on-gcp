@@ -35,9 +35,7 @@ def env_setup(monkeypatch):
 @pytest.fixture
 def environment():
     
-    environment = Environment()
-    
-    return environment
+    return Environment()
 
 def test_on_start(environment):
     

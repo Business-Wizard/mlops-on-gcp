@@ -79,11 +79,11 @@ SOURCE_DATASET_TABLE_NAMES = "chicago_taxi_trips"
 DESTINATION_DATASET = "chicago_taxi_ct"
 
 # GCS bucket names and region, can also be changed.
-BUCKET = "gs://" + PROJECT_ID
+BUCKET = f'gs://{PROJECT_ID}'
 REGION = "us-central1"
 
 # directory of the solution code base.
-PACKAGE_URI = BUCKET + "/chicago_taxi/code/trainer.tar"
+PACKAGE_URI = f'{BUCKET}/chicago_taxi/code/trainer.tar'
 JOB_DIR = BUCKET + "/jobs"
 
 model = "chicago_taxi_trips"

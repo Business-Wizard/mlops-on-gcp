@@ -77,13 +77,14 @@ def _input_fn(file_pattern: List[Text],
     A dataset that contains (features, indices) tuple where features is a
       dictionary of Tensors, and indices is a single Tensor of label indices.
   """
-  dataset = data_accessor.tf_dataset_factory(
+  return data_accessor.tf_dataset_factory(
       file_pattern,
       dataset_options.TensorFlowDatasetOptions(
-          batch_size=batch_size, label_key=features.transformed_name(features.LABEL_KEY)),
-      tf_transform_output.transformed_metadata.schema)
-    
-  return dataset
+          batch_size=batch_size,
+          label_key=features.transformed_name(features.LABEL_KEY),
+      ),
+      tf_transform_output.transformed_metadata.schema,
+  )
 
 
 def _get_hyperparameters() -> kerastuner.HyperParameters:

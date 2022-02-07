@@ -58,19 +58,17 @@ def _prepare_log_analyzer_request_body(
 
     if baseline_stats_location:
         parameters['baseline_stats_file'] = baseline_stats_location 
-    
+
     if time_window:
         parameters['time_window'] = time_window
-    
-    body = {
+
+    return {
         'launch_parameter': 
             {
                 'jobName': job_name,
                 'parameters' : parameters,
                 'containerSpecGcsPath': template_path
             }}
-
-    return body
     
 def run_log_analyzer(
     project_id: Text,
@@ -115,9 +113,7 @@ def run_log_analyzer(
         projectId=project_id,
         body=body)
 
-    response = request.execute()
-
-    return response
+    return request.execute()
 
 
 def schedule_log_analyzer(
@@ -171,14 +167,12 @@ def schedule_log_analyzer(
             'oauth_token': {'service_account_email': service_account}
         }
     }
-    
+
     timestamp = timestamp_pb2.Timestamp()
     timestamp.FromDatetime(schedule_time)
     task['schedule_time'] = timestamp
 
     client = tasks_v2.CloudTasksClient()
     parent = client.queue_path(project_id, region, task_queue)
-    response = client.create_task(parent, task)
-
-    return response
+    return client.create_task(parent, task)
 

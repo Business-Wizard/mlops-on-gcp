@@ -18,6 +18,7 @@
 """A command line interface to start a Beam pipeline to analyze a time series of records
 from the AI Platform Prediction request-response log."""
 
+
 import argparse
 import datetime
 import logging
@@ -119,7 +120,7 @@ if __name__ == '__main__':
         if known_args.time_window[-1]=='h': 
             time_window = datetime.timedelta(hours=int(known_args.time_window[0:-1]))
         else:
-            time_window = datetime.timedelta(minutes=int(known_args.time_window[0:-1]))
+            time_window = datetime.timedelta(minutes=int(known_args.time_window[:-1]))
 
     baseline_stats = None
     if known_args.baseline_stats_file:
